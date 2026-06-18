@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { Logo, Wordmark } from '../ui/Logo';
 
 export default function AuthModal({ isOpen, onClose, defaultTab = 'login' }) {
   const [tab, setTab] = useState(defaultTab);
@@ -42,7 +43,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = 'login' }) {
         </button>
 
         <div className="text-center mb-8">
-          <div className="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary mb-1">Sell My Business</div>
+          <Logo className="h-12 w-12 mx-auto mb-2" />
+          <Wordmark className="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary mb-1" />
           <p className="text-on-surface-variant text-label-sm">
             {tab === 'login' ? 'Welcome back' : 'Create your account'}
           </p>

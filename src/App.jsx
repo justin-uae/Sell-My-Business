@@ -10,6 +10,8 @@ import DashboardPage from './pages/DashboardPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import FAQPage from './pages/FAQPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 function ScrollToTop() {
@@ -43,6 +45,8 @@ function AppRoutes() {
         <Route path="/about" element={<Layout><AboutPage /></Layout>} />
         <Route path="/faq" element={<Layout><FAQPage /></Layout>} />
         <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
+        <Route path="/terms" element={<Layout><TermsPage /></Layout>} />
+        <Route path="/privacy" element={<Layout><PrivacyPage /></Layout>} />
         <Route
           path="/dashboard"
           element={

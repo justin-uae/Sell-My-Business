@@ -4,9 +4,6 @@ import { motion } from 'framer-motion';
 import { getProductByHandle, getAllProducts } from '../services/shopify';
 import ListingCard from '../components/listings/ListingCard';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { SAMPLE_LISTINGS } from '../data/sampleListings';
-
-const DEMO_FORCE = true;
 
 const fadeUp = { hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } } };
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } };
@@ -14,9 +11,9 @@ const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } };
 function formatCurrency(amount) {
   if (!amount) return '—';
   const n = parseFloat(amount);
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
-  if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}k`;
-  return `$${n.toLocaleString()}`;
+  if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 1_000) return `AED ${(n / 1_000).toFixed(0)}k`;
+  return `AED ${n.toLocaleString()}`;
 }
 
 export default function BusinessDetailPage() {
@@ -31,15 +28,6 @@ export default function BusinessDetailPage() {
   useEffect(() => {
     setLoading(true);
     setError('');
-
-    if (DEMO_FORCE) {
-      const found = SAMPLE_LISTINGS.find(p => p.handle === handle) || SAMPLE_LISTINGS[0];
-      setProduct(found);
-      setRelated(SAMPLE_LISTINGS.filter(p => p.handle !== found.handle).slice(0, 3));
-      setLoading(false);
-      return;
-    }
-
     Promise.all([
       getProductByHandle(handle),
       getAllProducts(4),
@@ -52,6 +40,16 @@ export default function BusinessDetailPage() {
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [handle]);
+
+  function buildWhatsAppUrl(type = 'contact') {
+    const number = product?.whatsapp?.replace(/\D/g, '');
+    if (!number) return null;
+    const price = product.price ? formatCurrency(product.price) : 'N/A';
+    const text = type === 'nda'
+      ? `Hi, I'd like to request an NDA / information pack for:\n*${product.title}*\nAsking Price: ${price}\nListing: ${window.location.href}`
+      : `Hi, I'm interested in purchasing:\n*${product.title}*\nIndustry: ${product.industry || 'N/A'}\nLocation: ${product.location || 'N/A'}\nAsking Price: ${price}\nListing: ${window.location.href}`;
+    return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
+  }
 
   if (loading) {
     return (
@@ -124,9 +122,11 @@ export default function BusinessDetailPage() {
                     {product.industry}
                   </span>
                 )}
-                <span className="bg-gold-leaf/30 text-white border border-gold-leaf/40 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider backdrop-blur-sm">
-                  Premium Listing
-                </span>
+                {product.tags?.includes('premium') && (
+                  <span className="bg-gold-leaf/30 text-white border border-gold-leaf/40 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider backdrop-blur-sm">
+                    Premium Listing
+                  </span>
+                )}
               </div>
               <h1 className="font-bold text-2xl md:text-3xl text-white leading-tight mb-2">{product.title}</h1>
               {product.location && (
@@ -274,59 +274,20 @@ export default function BusinessDetailPage() {
             </div>
           )}
 
-          {/* Growth Potential (Dark Panel) */}
-          <div className="bg-primary-container text-white p-6 md:p-10 rounded-3xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-investment-blue/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-            <h2 className="font-bold text-lg md:text-headline-lg mb-4 md:mb-6 relative z-10">Growth Potential</h2>
-            <ul className="space-y-4 md:space-y-6 relative z-10">
-              <li className="flex gap-3 md:gap-4">
-                <span className="material-symbols-outlined text-gold-leaf flex-shrink-0">rocket_launch</span>
-                <div>
-                  <h4 className="font-bold text-base mb-1">Market Expansion</h4>
-                  <p className="text-on-primary-container text-sm md:text-body-md leading-relaxed">
-                    Significant opportunity to expand into neighbouring markets and scale digital operations across the GCC region.
-                  </p>
+          {/* Quick Facts */}
+          <div>
+            <h3 className="font-bold text-headline-lg-mobile mb-5">Quick Facts</h3>
+            <div className="space-y-3">
+              {[
+                { label: 'Industry', value: product.industry || '—' },
+                { label: 'Location', value: product.location || '—' },
+                { label: 'Year Established', value: product.yearEstablished || '—' },
+              ].map(f => (
+                <div key={f.label} className="flex justify-between items-center pb-2 border-b border-surface-variant/50">
+                  <span className="text-on-surface-variant font-medium text-label-sm">{f.label}</span>
+                  <span className="font-bold text-label-sm">{f.value}</span>
                 </div>
-              </li>
-              <li className="flex gap-3 md:gap-4">
-                <span className="material-symbols-outlined text-gold-leaf flex-shrink-0">add_moderator</span>
-                <div>
-                  <h4 className="font-bold text-base mb-1">Operational Efficiency</h4>
-                  <p className="text-on-primary-container text-sm md:text-body-md leading-relaxed">
-                    Streamlined systems with documented SOPs enable a smooth handover and immediate value-add opportunities.
-                  </p>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          {/* Included Assets */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
-            <div>
-              <h3 className="font-bold text-base md:text-headline-lg-mobile mb-4 md:mb-5">Included Assets</h3>
-              <ul className="space-y-3 text-sm md:text-body-md text-on-surface-variant">
-                {['Full Business Operations', 'Customer Database & Contracts', 'Brand Assets & IP', '3-Month Post-Sale Support', 'Staff Transition Assistance'].map(a => (
-                  <li key={a} className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-investment-blue text-[20px]">check_circle</span>
-                    {a}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold text-headline-lg-mobile mb-5">Quick Facts</h3>
-              <div className="space-y-3">
-                {[
-                  { label: 'Industry', value: product.industry || '—' },
-                  { label: 'Location', value: product.location || '—' },
-                  { label: 'Year Established', value: product.yearEstablished || '—' },
-                ].map(f => (
-                  <div key={f.label} className="flex justify-between items-center pb-2 border-b border-surface-variant/50">
-                    <span className="text-on-surface-variant font-medium text-label-sm">{f.label}</span>
-                    <span className="font-bold text-label-sm">{f.value}</span>
-                  </div>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -358,12 +319,36 @@ export default function BusinessDetailPage() {
             </div>
 
             <div className="space-y-3">
-              <button className="w-full bg-primary text-on-primary py-4 rounded-2xl font-bold text-label-sm hover:scale-[1.02] transition-transform shadow-md">
-                Contact Seller
-              </button>
-              <button className="w-full border-2 border-primary py-4 rounded-2xl font-bold text-label-sm hover:bg-primary hover:text-white transition-all">
-                Request NDA / Information
-              </button>
+              {buildWhatsAppUrl('contact') ? (
+                <a
+                  href={buildWhatsAppUrl('contact')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-primary text-on-primary py-4 rounded-2xl font-bold text-label-sm hover:scale-[1.02] transition-transform shadow-md flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">chat</span>
+                  Contact Seller on WhatsApp
+                </a>
+              ) : (
+                <button disabled className="w-full bg-primary/40 text-on-primary/60 py-4 rounded-2xl font-bold text-label-sm cursor-not-allowed">
+                  Contact Seller
+                </button>
+              )}
+              {buildWhatsAppUrl('nda') ? (
+                <a
+                  href={buildWhatsAppUrl('nda')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full border-2 border-primary py-4 rounded-2xl font-bold text-label-sm hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">description</span>
+                  Request NDA / Information
+                </a>
+              ) : (
+                <button disabled className="w-full border-2 border-primary/40 text-primary/40 py-4 rounded-2xl font-bold text-label-sm cursor-not-allowed">
+                  Request NDA / Information
+                </button>
+              )}
               <p className="text-center text-on-surface-variant text-label-xs pt-1">
                 Typical response time: &lt; 4 hours
               </p>

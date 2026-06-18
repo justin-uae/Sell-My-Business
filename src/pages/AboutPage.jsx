@@ -54,12 +54,12 @@ export default function AboutPage() {
         <div className="max-w-site mx-auto px-5 md:px-20 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
-              <p className="text-gold-leaf text-label-sm uppercase tracking-[0.2em] font-bold mb-4">About Sell My Business</p>
+              <p className="text-gold-leaf text-label-sm uppercase tracking-[0.2em] font-bold mb-4">About SellMyBusiness.ae</p>
               <h1 className="text-4xl md:text-display-lg font-bold text-white mb-6 leading-[1.1]">
                 We Built This Because We Knew It Was Needed
               </h1>
               <p className="text-on-primary-container text-body-lg leading-relaxed">
-                Sell My Business is a UAE based business marketplace run by people who have spent years buying, selling, and brokering businesses in this region. We're not a global platform with a UAE filter this is all we do, and we do it properly.
+                SellMyBusiness.ae is a UAE based business marketplace run by people who have spent years buying, selling, and brokering businesses in this region. We're not a global platform with a UAE filter this is all we do, and we do it properly.
               </p>
             </motion.div>
 
@@ -94,7 +94,7 @@ export default function AboutPage() {
             <Section>
               <p className="text-investment-blue text-label-sm uppercase tracking-[0.2em] font-bold mb-4">Our Story</p>
               <h2 className="text-2xl md:text-headline-lg font-bold mb-8">
-                Honest answer: we built Sell My Business out of frustration.
+                Honest answer: we built SellMyBusiness.ae out of frustration.
               </h2>
               <div className="space-y-5 text-on-surface-variant text-body-lg leading-relaxed">
                 <p>
@@ -104,7 +104,7 @@ export default function AboutPage() {
                   We decided to build something better.
                 </p>
                 <p>
-                  Sell My Business isn't trying to be everything to everyone. We focus on the UAE, we maintain quality over volume, and we stay involved in transactions rather than just listing and disappearing. It's a simple model but it's one that actually works for the people using it.
+                  SellMyBusiness.ae isn't trying to be everything to everyone. We focus on the UAE, we maintain quality over volume, and we stay involved in transactions rather than just listing and disappearing. It's a simple model but it's one that actually works for the people using it.
                 </p>
               </div>
             </Section>
@@ -154,7 +154,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <Section>
               <p className="text-investment-blue text-label-sm uppercase tracking-[0.2em] font-bold mb-4">The Team</p>
-              <h2 className="text-2xl md:text-headline-lg font-bold mb-6">Who's Behind Sell My Business</h2>
+              <h2 className="text-2xl md:text-headline-lg font-bold mb-6">Who's Behind SellMyBusiness.ae</h2>
               <p className="text-on-surface-variant text-body-lg leading-relaxed mb-6">
                 Between us, our team has managed businesses, structured commercial transactions, and navigated UAE trade licensing for many years. We've been on both sides of the table as buyers and sellers which means we understand the experience from the inside.
               </p>

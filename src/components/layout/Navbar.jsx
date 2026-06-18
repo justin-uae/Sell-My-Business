@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import AuthModal from '../auth/AuthModal';
+import { Logo, Wordmark } from '../ui/Logo';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -46,8 +47,9 @@ export default function Navbar() {
         <div className="flex items-center justify-between px-margin-mobile md:px-margin-desktop py-4 max-w-site mx-auto">
 
           {/* Brand */}
-          <Link to="/" className="font-bold text-2xl tracking-tight text-white select-none">
-            Sell My Business
+          <Link to="/" className="flex items-center gap-2 sm:gap-2.5 select-none min-w-0">
+            <Logo className="h-9 w-9 sm:h-10 sm:w-10" badge />
+            <Wordmark className="font-bold text-base sm:text-lg md:text-xl tracking-tight text-white" />
           </Link>
 
           {/* Desktop links */}
@@ -59,7 +61,7 @@ export default function Navbar() {
                 className={`text-sm font-medium transition-all duration-200 ${
                   isActive(l.to)
                     ? 'text-investment-blue border-b-2 border-investment-blue pb-0.5'
-                    : 'text-white/65 hover:text-white'
+                    : 'text-white'
                 }`}
               >
                 {l.label}
@@ -79,10 +81,10 @@ export default function Navbar() {
                   <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-sm">
                     {customer.firstName?.[0] || customer.email?.[0] || 'U'}
                   </div>
-                  <span className="text-sm font-medium text-white/80">
+                  <span className="text-sm font-medium text-white">
                     {customer.firstName || customer.email}
                   </span>
-                  <span className="material-symbols-outlined text-base text-white/50">
+                  <span className="material-symbols-outlined text-base text-white">
                     {userMenuOpen ? 'expand_less' : 'expand_more'}
                   </span>
                 </button>
@@ -113,7 +115,7 @@ export default function Navbar() {
               <>
                 <button
                   onClick={() => openAuth('login')}
-                  className="hidden md:block text-sm font-medium text-white/65 hover:text-white transition-colors px-3 py-2"
+                  className="hidden md:block text-sm font-medium text-white transition-colors px-3 py-2"
                 >
                   Login
                 </button>
@@ -150,7 +152,7 @@ export default function Navbar() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-white font-semibold text-sm truncate">{customer.firstName || 'Account'}</p>
-                    <p className="text-white/45 text-xs truncate">{customer.email}</p>
+                    <p className="text-white text-xs truncate">{customer.email}</p>
                   </div>
                 </div>
               )}
@@ -162,7 +164,7 @@ export default function Navbar() {
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                     isActive(l.to)
                       ? 'bg-investment-blue/20 text-investment-blue'
-                      : 'text-white/75 hover:bg-white/10 hover:text-white'
+                      : 'text-white hover:bg-white/10'
                   }`}
                 >
                   {l.label}
@@ -171,11 +173,11 @@ export default function Navbar() {
 
               {customer ? (
                 <div className="pt-2 border-t border-white/10 space-y-1 mt-2">
-                  <Link to="/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/75 hover:bg-white/10 hover:text-white transition-colors">
+                  <Link to="/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition-colors">
                     <span className="material-symbols-outlined text-base">dashboard</span>
                     My Dashboard
                   </Link>
-                  <Link to="/sell" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/75 hover:bg-white/10 hover:text-white transition-colors">
+                  <Link to="/sell" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition-colors">
                     <span className="material-symbols-outlined text-base">add_business</span>
                     List a Business
                   </Link>
@@ -191,7 +193,7 @@ export default function Navbar() {
                 <div className="flex gap-3 pt-3">
                   <button
                     onClick={() => { openAuth('login'); setMobileOpen(false); }}
-                    className="flex-1 py-2.5 border border-white/20 text-white/75 rounded-xl text-sm font-medium hover:bg-white/10 transition-colors"
+                    className="flex-1 py-2.5 border border-white/20 text-white rounded-xl text-sm font-medium hover:bg-white/10 transition-colors"
                   >
                     Login
                   </button>

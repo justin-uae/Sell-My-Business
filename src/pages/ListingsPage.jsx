@@ -4,9 +4,6 @@ import { motion } from 'framer-motion';
 import { getAllProducts, searchProducts } from '../services/shopify';
 import ListingCard from '../components/listings/ListingCard';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { SAMPLE_LISTINGS } from '../data/sampleListings';
-
-const DEMO_FORCE = true;
 
 const INDUSTRIES = [
   'Technology & SaaS',
@@ -39,9 +36,9 @@ const SORT_OPTIONS = [
 ];
 
 function formatPrice(n) {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}k`;
-  return `$${n.toLocaleString()}`;
+  if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `AED ${(n / 1_000).toFixed(0)}k`;
+  return `AED ${n.toLocaleString()}`;
 }
 
 export default function ListingsPage() {
@@ -68,9 +65,7 @@ export default function ListingsPage() {
     setError('');
     try {
       let results;
-      if (DEMO_FORCE) {
-        results = SAMPLE_LISTINGS;
-      } else if (filters.q) {
+      if (filters.q) {
         results = await searchProducts(filters.q, 50);
       } else {
         const data = await getAllProducts(50);
@@ -79,10 +74,7 @@ export default function ListingsPage() {
 
       // Client-side filter + sort
       let filtered = results.filter(p => {
-        if (filters.q && DEMO_FORCE) {
-          const q = filters.q.toLowerCase();
-          if (!p.title.toLowerCase().includes(q) && !p.industry.toLowerCase().includes(q) && !p.location.toLowerCase().includes(q)) return false;
-        }
+        if (filters.verifiedOnly && !p.tags?.includes('verified')) return false;
         if (filters.industries.length > 0) {
           const match = filters.industries.some(ind =>
             p.industry?.toLowerCase().includes(ind.toLowerCase()) ||
@@ -195,8 +187,8 @@ export default function ListingsPage() {
           className="w-full h-1.5 bg-surface-container rounded-lg appearance-none cursor-pointer"
         />
         <div className="flex justify-between text-label-xs text-outline">
-          <span>$100k</span>
-          <span>$10M+</span>
+          <span>AED 100k</span>
+          <span>AED 10M+</span>
         </div>
       </div>
 

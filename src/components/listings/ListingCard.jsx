@@ -24,9 +24,9 @@ function getIndustry(industry = '') {
 function formatCurrency(amount) {
   if (!amount) return null;
   const n = parseFloat(amount);
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}k`;
-  return `$${n.toLocaleString()}`;
+  if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `AED ${(n / 1_000).toFixed(0)}k`;
+  return `AED ${n.toLocaleString()}`;
 }
 
 export default function ListingCard({ product, view = 'grid', index = 0 }) {

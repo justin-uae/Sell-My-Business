@@ -20,7 +20,7 @@ const FAQ_SECTIONS = [
   {
     heading: 'General',
     items: [
-      { q: 'What exactly is Sell My Business?', a: "We're a UAE-focused marketplace for buying and selling businesses. We list verified businesses for sale, connect buyers and sellers, and provide support throughout the transaction from valuation to handover." },
+      { q: 'What exactly is SellMyBusiness.ae?', a: "We're a UAE-focused marketplace for buying and selling businesses. We list verified businesses for sale, connect buyers and sellers, and provide support throughout the transaction from valuation to handover." },
       { q: 'What industries do you cover?', a: 'All of them, really. Food and beverage, retail, services, health and beauty, construction, tech, education, hospitality, automotive if it\'s a legitimate UAE business, we can list it.' },
       { q: 'Do you cover all emirates or just Abu Dhabi?', a: "All seven emirates. We're headquartered in Abu Dhabi, but we list and support businesses across the entire country." },
     ],

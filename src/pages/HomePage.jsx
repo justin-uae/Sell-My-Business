@@ -6,6 +6,7 @@ import FeaturedCard from '../components/listings/FeaturedCard';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import ThreeHeroBg from '../components/ui/ThreeHeroBg';
 import ParticleBackground from '../components/ui/ParticleBackground';
+import StockChartHero from '../components/ui/StockChartHero';
 
 const STATS = [
   { value: '500+', label: 'Live Listings' },
@@ -42,7 +43,7 @@ const SELLER_STEPS = [
 ];
 
 const TESTIMONIALS = [
-  { quote: "I'd tried two other platforms before Sell My Business and got nowhere. Within ten days of listing here, I had a proper offer on the table. The team actually kept me updated which sounds basic but made a huge difference.", name: 'Sarah M.', role: 'Business Seller, Abu Dhabi' },
+  { quote: "I'd tried two other platforms before SellMyBusiness.ae and got nowhere. Within ten days of listing here, I had a proper offer on the table. The team actually kept me updated which sounds basic but made a huge difference.", name: 'Sarah M.', role: 'Business Seller, Abu Dhabi' },
   { quote: "I didn't really know how to value a business or what to look for. The advisor I worked with was patient and honest he told me one business I was interested in was overpriced and explained why. That kind of advice is rare.", name: 'Khalid R.', role: 'First-Time Buyer, Dubai' },
   { quote: "The leads I get here are in a different league compared to other platforms. These are people with real money looking to make real investments.", name: 'Ahmed T.', role: 'Investor, Abu Dhabi' },
 ];
@@ -56,70 +57,6 @@ const WHY_US = [
   { icon: 'groups', text: 'Our team has actually bought, sold, and run businesses in the UAE.' },
 ];
 
-// DEMO: sample listings for UI testing remove DEMO_FORCE below to re-enable Shopify
-const DEMO_LISTINGS = [
-  {
-    handle: 'enterprise-fintech-platform',
-    title: 'Enterprise Fintech Platform',
-    industry: 'SaaS',
-    location: 'Dubai, UAE',
-    price: '$4.2M',
-    revenue: '$1.8M',
-    profit: '$620k',
-    img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80',
-  },
-  {
-    handle: 'prime-downtown-bistro',
-    title: 'Prime Downtown Bistro',
-    industry: 'F&B',
-    location: 'Abu Dhabi, UAE',
-    price: '$1.5M',
-    revenue: '$950k',
-    profit: '$280k',
-    img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
-  },
-  {
-    handle: 'regional-logistics-fleet',
-    title: 'Regional Logistics Fleet',
-    industry: 'Logistics',
-    location: 'Sharjah, UAE',
-    price: '$8.7M',
-    revenue: '$12M',
-    profit: '$2.1M',
-    img: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80',
-  },
-  {
-    handle: 'luxury-fashion-boutique',
-    title: 'Luxury Fashion Boutique',
-    industry: 'Retail',
-    location: 'Dubai Mall, UAE',
-    price: '$3.2M',
-    revenue: '$4.8M',
-    profit: '$890k',
-    img: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80',
-  },
-  {
-    handle: 'cloud-saas-platform',
-    title: 'Cloud SaaS Platform',
-    industry: 'Software',
-    location: 'Dubai Internet City, UAE',
-    price: '$6.5M',
-    revenue: '$3.2M',
-    profit: '$1.4M',
-    img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
-  },
-  {
-    handle: 'hotel-spa-resort',
-    title: 'Hotel & Spa Resort',
-    industry: 'Hospitality',
-    location: 'Ras Al Khaimah, UAE',
-    price: '$12M',
-    revenue: '$8.6M',
-    profit: '$2.8M',
-    img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80',
-  },
-];
-const DEMO_FORCE = true; // set false to fetch live Shopify data
 
 const fadeUp = {
   hidden: { opacity: 0, y: 36 },
@@ -139,14 +76,13 @@ function Section({ children, className = '' }) {
 
 export default function HomePage() {
   const [featured, setFeatured] = useState([]);
-  const [loading, setLoading] = useState(!DEMO_FORCE);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState('buyer');
   const carouselRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (DEMO_FORCE) return;
     getAllProducts(8)
       .then(({ products }) => setFeatured(products))
       .catch(console.error)
@@ -170,107 +106,112 @@ export default function HomePage() {
     <div className="bg-background">
 
       {/* ── HERO ── */}
-      <header className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+      <header className="relative min-h-screen flex flex-col overflow-hidden">
         <div className="absolute inset-0 z-0 bg-[#060c14]">
           <ThreeHeroBg className="opacity-100" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/50" />
         </div>
 
-        <div className="max-w-site mx-auto px-5 md:px-20 relative z-[2] w-full">
-          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
-            {/* Left Column - Content */}
-            <div className="text-center lg:text-left">
-              {/* <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full mb-6 border border-white/20 mx-auto lg:mx-0"
-                style={{ width: 'fit-content' }}
-              >
-                <span className="text-xs text-white/80 font-medium">Since 2020</span>
-              </motion.div> */}
+        {/* Main content — vertically centered in remaining space */}
+        <div className="flex-1 flex items-center pt-24 pb-8">
+          <div className="max-w-site mx-auto px-5 md:px-20 relative z-[2] w-full">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
 
-              <motion.h1
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.7, delay: 0.1 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-[1.2] md:leading-[1.15] text-white"
-              >
-                Buy or Sell a Business in the UAE{' '}
-                <span className="text-investment-blue block lg:inline">
-                  Without the Headache
-                </span>
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-base sm:text-lg text-white/90 mb-8 leading-relaxed max-w-2xl lg:mx-0 mx-auto"
-              >
-                Sell My Business connects real buyers with real sellers across Abu Dhabi and the UAE.
-              </motion.p>
-
-              <motion.form
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                onSubmit={handleSearch}
-                className="flex gap-2 mb-5 max-w-xl lg:mx-0 mx-auto"
-              >
-                <input
-                  type="text"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  placeholder="Search businesses for sale…"
-                  className="flex-1 min-w-0 px-4 py-3 bg-white rounded-xl text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-investment-blue outline-none text-sm sm:text-base"
-                />
-                <button
-                  type="submit"
-                  className="bg-investment-blue text-white px-5 py-3 rounded-xl font-semibold hover:bg-investment-blue/80 transition-colors whitespace-nowrap text-sm sm:text-base shrink-0"
+              {/* Left — heading, search, link */}
+              <div>
+                <motion.h1
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.1 }}
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-[1.2] md:leading-[1.15] text-white"
                 >
-                  Search
-                </button>
-              </motion.form>
+                  Buy or Sell a Business in the UAE{' '}
+                  <span className="text-investment-blue">
+                    Without the Headache
+                  </span>
+                </motion.h1>
 
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="text-base sm:text-lg text-white/90 mb-8 leading-relaxed"
+                >
+                  SellMyBusiness.ae connects real buyers with real sellers across Abu Dhabi and the UAE.
+                </motion.p>
+
+                <motion.form
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  onSubmit={handleSearch}
+                  className="flex gap-2 mb-5 max-w-xl"
+                >
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    placeholder="Search businesses for sale…"
+                    className="flex-1 min-w-0 px-4 py-3 bg-white rounded-xl text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-investment-blue outline-none text-sm sm:text-base"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-investment-blue text-white px-5 py-3 rounded-xl font-semibold hover:bg-investment-blue/80 transition-colors whitespace-nowrap text-sm sm:text-base shrink-0"
+                  >
+                    Search
+                  </button>
+                </motion.form>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <Link
+                    to="/sell"
+                    className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">storefront</span>
+                    Looking to sell? List your business
+                    <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </Link>
+                </motion.div>
+              </div>
+
+              {/* Right — stats grid */}
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="flex justify-center lg:justify-start"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7, delay: 0.2 }}
+                className="grid grid-cols-2 gap-3 sm:gap-4 mt-8 lg:mt-0"
               >
-                <Link
-                  to="/sell"
-                  className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors"
-                >
-                  <span className="material-symbols-outlined text-[16px]">storefront</span>
-                  Looking to sell? List your business
-                  <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-                </Link>
+                {[
+                  { value: '500+', label: 'Active Listings' },
+                  { value: 'AED 2.5B+', label: 'Transaction Value' },
+                  { value: '48h', label: 'Avg. Response Time' },
+                  { value: '95%', label: 'Success Rate' },
+                ].map((stat, i) => (
+                  <div key={i} className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/20">
+                    <div className="text-xl sm:text-2xl font-bold text-white">{stat.value}</div>
+                    <div className="text-xs sm:text-sm text-white/60">{stat.label}</div>
+                  </div>
+                ))}
               </motion.div>
-            </div>
 
-            {/* Right Column - Stats Cards */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="grid grid-cols-2 gap-3 sm:gap-4 mt-8 lg:mt-0"
-            >
-              {[
-                { value: "500+", label: "Active Listings" },
-                { value: "AED 2.5B+", label: "Transaction Value" },
-                { value: "48h", label: "Avg. Response Time" },
-                { value: "95%", label: "Success Rate" }
-              ].map((stat, i) => (
-                <div key={i} className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/20 text-center">
-                  <div className="text-xl sm:text-2xl font-bold text-white">{stat.value}</div>
-                  <div className="text-xs sm:text-sm text-white/60">{stat.label}</div>
-                </div>
-              ))}
-            </motion.div>
+            </div>
           </div>
         </div>
+
+        {/* Stock chart strip — anchored to the bottom of the header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="relative z-[2] w-full"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          <StockChartHero />
+        </motion.div>
       </header>
 
       {/* ── FEATURED LISTINGS ── */}
@@ -304,10 +245,15 @@ export default function HomePage() {
 
         {loading ? (
           <div className="flex justify-center py-16"><LoadingSpinner size="lg" /></div>
+        ) : featured.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center px-5">
+            <span className="material-symbols-outlined text-5xl text-outline mb-4">storefront</span>
+            <p className="text-on-surface-variant text-body-md">No listings yet. Check back soon.</p>
+          </div>
         ) : (
           <div ref={carouselRef} className="flex items-start gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory pl-5 md:pl-20 pr-5 md:pr-20" style={{ paddingBottom: '24px' }}>
-            {(featured.length > 0 ? featured : DEMO_LISTINGS).map((item, i) => (
-              <FeaturedCard key={item.id || item.title} product={featured.length > 0 ? item : null} demo={featured.length > 0 ? null : item} index={i} />
+            {featured.map((product, i) => (
+              <FeaturedCard key={product.id} product={product} index={i} />
             ))}
           </div>
         )}
@@ -326,7 +272,7 @@ export default function HomePage() {
                 Anyone who's tried to buy or sell a business in the UAE knows the drill listings with zero financial detail, buyers who disappear after the first call, sellers who don't know what their business is actually worth. It's frustrating.
               </p>
               <p className="text-on-surface-variant text-sm md:text-body-lg leading-relaxed mb-6 md:mb-10">
-                Sell My Business was built because that experience needed to change. We focus exclusively on the UAE market, which means we understand how businesses here actually operate, what buyers are genuinely looking for, and how to get deals across the line without months of back and forth.
+                SellMyBusiness.ae was built because that experience needed to change. We focus exclusively on the UAE market, which means we understand how businesses here actually operate, what buyers are genuinely looking for, and how to get deals across the line without months of back and forth.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center sm:items-start">
                 <Link to="/about" className="inline-flex items-center gap-2 text-label-sm font-semibold text-investment-blue hover:underline">
@@ -396,7 +342,7 @@ export default function HomePage() {
           <motion.div key={activeTab} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <div className="text-center mb-10">
               <h3 className="text-xl font-bold text-white">
-                {activeTab === 'buyer' ? 'How Buying a Business Works on Sell My Business' : 'How Selling Your Business Works'}
+                {activeTab === 'buyer' ? 'How Buying a Business Works on SellMyBusiness.ae' : 'How Selling Your Business Works'}
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -466,7 +412,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <Section>
               <p className="text-investment-blue text-label-sm uppercase tracking-[0.2em] font-bold mb-4">Why Us</p>
-              <h2 className="text-2xl md:text-headline-lg font-bold mb-6">Why Use Sell My Business?</h2>
+              <h2 className="text-2xl md:text-headline-lg font-bold mb-6">Why Use SellMyBusiness.ae?</h2>
               <p className="text-on-surface-variant text-body-md leading-relaxed mb-10">
                 We're not a global platform with a UAE filter. We were built specifically for this market by people who have spent years in it.
               </p>

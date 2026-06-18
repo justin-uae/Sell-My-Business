@@ -15,26 +15,20 @@ function getColor(industry = '') {
 function fmt(v) {
   if (!v) return null;
   const n = parseFloat(v);
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}k`;
-  return `$${n.toLocaleString()}`;
+  if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `AED ${(n / 1_000).toFixed(0)}k`;
+  return `AED ${n.toLocaleString()}`;
 }
 
-export default function FeaturedCard({ product = null, demo = null, index = 0 }) {
-  const data = product
-    ? {
-        handle: product.handle,
-        img: product.coverImage,
-        title: product.title,
-        industry: product.industry,
-        location: product.location,
-        price: fmt(product.price),
-        revenue: fmt(product.revenue),
-        profit: fmt(product.profit),
-      }
-    : demo;
-
-  const { handle, img, title, industry, location, price, revenue, profit } = data || {};
+export default function FeaturedCard({ product, index = 0 }) {
+  const handle = product?.handle;
+  const img = product?.coverImage;
+  const title = product?.title;
+  const industry = product?.industry;
+  const location = product?.location;
+  const price = fmt(product?.price);
+  const revenue = fmt(product?.revenue);
+  const profit = fmt(product?.profit);
   const color = getColor(industry);
 
   return (

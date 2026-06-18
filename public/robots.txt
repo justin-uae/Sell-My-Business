@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Block dashboard (requires authentication)
+Disallow: /dashboard
+
+# Block any API or internal paths
+Disallow: /api/
+
+Sitemap: https://www.sellmybusiness.ae/sitemap.xml

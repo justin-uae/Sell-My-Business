@@ -139,7 +139,8 @@ const PRODUCT_FIELDS = `
     { namespace: "business", key: "location" },
     { namespace: "business", key: "ebitda" },
     { namespace: "business", key: "multiplier" },
-    { namespace: "business", key: "year_established" }
+    { namespace: "business", key: "year_established" },
+    { namespace: "business", key: "whatsapp" }
   ]) {
     key
     namespace
@@ -216,7 +217,7 @@ function normalizeProduct(node) {
     descriptionHtml: node.descriptionHtml,
     tags: node.tags || [],
     price: parseFloat(node.priceRange?.minVariantPrice?.amount || 0),
-    currency: node.priceRange?.minVariantPrice?.currencyCode || 'USD',
+    currency: node.priceRange?.minVariantPrice?.currencyCode || 'AED',
     images,
     coverImage: images[0]?.url || null,
     industry: metafields.industry || getTagValue(node.tags, 'industry_') || '',
@@ -226,6 +227,7 @@ function normalizeProduct(node) {
     ebitda: metafields.ebitda || '',
     multiplier: metafields.multiplier || '',
     yearEstablished: metafields.year_established || '',
+    whatsapp: metafields.whatsapp || '',
   };
 }
 

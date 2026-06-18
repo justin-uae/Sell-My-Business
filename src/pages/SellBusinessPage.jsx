@@ -47,6 +47,8 @@ export default function SellBusinessPage() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [imageWarnings, setImageWarnings] = useState([]);
+  const [uploadWarnings, setUploadWarnings] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
@@ -58,10 +60,34 @@ export default function SellBusinessPage() {
 
   const set = (field, value) => setForm(f => ({ ...f, [field]: value }));
 
+  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+  const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+
   const handleImages = (e) => {
-    const files = Array.from(e.target.files).slice(0, 8);
-    setImageFiles(files);
-    setImagePreviews(files.map(f => URL.createObjectURL(f)));
+    const incoming = Array.from(e.target.files);
+    const warnings = [];
+
+    const valid = incoming.filter(file => {
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        warnings.push(`"${file.name}" was skipped — only PNG, JPG, and WebP are supported.`);
+        return false;
+      }
+      if (file.size > MAX_IMAGE_BYTES) {
+        warnings.push(`"${file.name}" was skipped — file exceeds the 10 MB limit.`);
+        return false;
+      }
+      return true;
+    });
+
+    const slots = Math.max(0, 8 - imageFiles.length);
+    if (valid.length > slots) {
+      warnings.push(`Max 8 images allowed — ${valid.length - slots} file(s) were not added.`);
+    }
+
+    const merged = [...imageFiles, ...valid.slice(0, slots)];
+    setImageFiles(merged);
+    setImagePreviews(merged.map(f => URL.createObjectURL(f)));
+    setImageWarnings(warnings);
   };
 
   const removeImage = (i) => {
@@ -69,6 +95,7 @@ export default function SellBusinessPage() {
     const newPreviews = imagePreviews.filter((_, idx) => idx !== i);
     setImageFiles(newFiles);
     setImagePreviews(newPreviews);
+    setImageWarnings([]);
   };
 
   const validateStep = () => {
@@ -103,12 +130,14 @@ export default function SellBusinessPage() {
     setSubmitting(true);
     setError('');
     try {
-      const imageNames = imageFiles.map(f => f.name);
-      await submitBusiness({
+      const { images, ...fields } = form;
+      const result = await submitBusiness({
         shopify_customer_id: customerId,
-        ...form,
-        images: imageNames.join(','),
-      });
+        ...fields,
+      }, imageFiles);
+      if (result.upload_errors?.length) {
+        setUploadWarnings(result.upload_errors);
+      }
       setSubmitted(true);
     } catch (e) {
       setError(e.message || 'Submission failed. Please try again.');
@@ -125,9 +154,21 @@ export default function SellBusinessPage() {
             <span className="material-symbols-outlined text-success-green text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
           </div>
           <h2 className="text-headline-lg-mobile font-bold text-primary mb-3">Submission Received!</h2>
-          <p className="text-on-surface-variant text-body-md mb-8">
+          <p className="text-on-surface-variant text-body-md mb-6">
             Your business listing is under review. Our team will contact you within 24 to 48 hours to discuss the next steps.
           </p>
+          {uploadWarnings.length > 0 && (
+            <div className="mb-6 rounded-xl border border-warning-amber/40 bg-warning-amber/10 px-4 py-3 text-left space-y-1">
+              <p className="flex items-center gap-2 text-label-sm font-semibold text-on-surface mb-1">
+                <span className="material-symbols-outlined text-warning-amber text-[18px]">warning</span>
+                Some images could not be uploaded
+              </p>
+              {uploadWarnings.map((w, i) => (
+                <p key={i} className="text-label-sm text-on-surface-variant pl-6">{w}</p>
+              ))}
+              <p className="text-label-sm text-on-surface-variant pl-6 pt-1">You can re-submit the listing with smaller or differently formatted images.</p>
+            </div>
+          )}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={() => navigate('/dashboard')}
@@ -136,7 +177,7 @@ export default function SellBusinessPage() {
               View My Dashboard
             </button>
             <button
-              onClick={() => { setSubmitted(false); setStep(0); setForm(INITIAL_FORM); setImageFiles([]); setImagePreviews([]); }}
+              onClick={() => { setSubmitted(false); setStep(0); setForm(INITIAL_FORM); setImageFiles([]); setImagePreviews([]); setImageWarnings([]); setUploadWarnings([]); }}
               className="border border-outline px-6 py-3 rounded-xl text-label-sm font-medium"
             >
               Submit Another
@@ -276,56 +317,56 @@ export default function SellBusinessPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField label="Asking Price (USD)" required>
+                  <FormField label="Asking Price (AED)" required>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium">$</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium text-sm">AED</span>
                       <input
                         type="number"
                         value={form.asking_price}
                         onChange={e => set('asking_price', e.target.value)}
-                        className="form-input pl-8"
+                        className="form-input pl-14"
                         placeholder="0"
                         min={0}
                       />
                     </div>
                   </FormField>
 
-                  <FormField label="Annual Revenue (USD)">
+                  <FormField label="Annual Revenue (AED)">
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium">$</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium text-sm">AED</span>
                       <input
                         type="number"
                         value={form.revenue}
                         onChange={e => set('revenue', e.target.value)}
-                        className="form-input pl-8"
+                        className="form-input pl-14"
                         placeholder="0"
                         min={0}
                       />
                     </div>
                   </FormField>
 
-                  <FormField label="Net Profit (USD)">
+                  <FormField label="Net Profit (AED)">
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium">$</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium text-sm">AED</span>
                       <input
                         type="number"
                         value={form.profit}
                         onChange={e => set('profit', e.target.value)}
-                        className="form-input pl-8"
+                        className="form-input pl-14"
                         placeholder="0"
                         min={0}
                       />
                     </div>
                   </FormField>
 
-                  <FormField label="EBITDA (USD)">
+                  <FormField label="EBITDA (AED)">
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium">$</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium text-sm">AED</span>
                       <input
                         type="number"
                         value={form.ebitda}
                         onChange={e => set('ebitda', e.target.value)}
-                        className="form-input pl-8"
+                        className="form-input pl-14"
                         placeholder="0"
                         min={0}
                       />
@@ -390,6 +431,17 @@ export default function SellBusinessPage() {
                   </span>
                 </label>
 
+                {imageWarnings.length > 0 && (
+                  <div className="mt-4 rounded-xl border border-warning-amber/40 bg-warning-amber/10 px-4 py-3 space-y-1">
+                    {imageWarnings.map((w, i) => (
+                      <p key={i} className="flex items-start gap-2 text-label-sm text-on-surface">
+                        <span className="material-symbols-outlined text-warning-amber text-[18px] mt-px shrink-0">warning</span>
+                        {w}
+                      </p>
+                    ))}
+                  </div>
+                )}
+
                 {imagePreviews.length > 0 && (
                   <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
                     {imagePreviews.map((src, i) => (
@@ -432,10 +484,10 @@ export default function SellBusinessPage() {
                     { label: 'Industry', value: form.industry },
                     { label: 'Location', value: form.location },
                     { label: 'Year Established', value: form.year_established },
-                    { label: 'Asking Price', value: form.asking_price ? `$${parseFloat(form.asking_price).toLocaleString()}` : '—' },
-                    { label: 'Annual Revenue', value: form.revenue ? `$${parseFloat(form.revenue).toLocaleString()}` : '—' },
-                    { label: 'Net Profit', value: form.profit ? `$${parseFloat(form.profit).toLocaleString()}` : '—' },
-                    { label: 'EBITDA', value: form.ebitda ? `$${parseFloat(form.ebitda).toLocaleString()}` : '—' },
+                    { label: 'Asking Price', value: form.asking_price ? `AED ${parseFloat(form.asking_price).toLocaleString()}` : '—' },
+                    { label: 'Annual Revenue', value: form.revenue ? `AED ${parseFloat(form.revenue).toLocaleString()}` : '—' },
+                    { label: 'Net Profit', value: form.profit ? `AED ${parseFloat(form.profit).toLocaleString()}` : '—' },
+                    { label: 'EBITDA', value: form.ebitda ? `AED ${parseFloat(form.ebitda).toLocaleString()}` : '—' },
                   ].map(item => (
                     <div key={item.label} className="space-y-1">
                       <p className="text-label-xs text-on-surface-variant uppercase tracking-wider">{item.label}</p>
@@ -526,13 +578,13 @@ export default function SellBusinessPage() {
                   <div className="flex justify-between items-center">
                     <span className="text-on-surface-variant text-label-sm">Target Price</span>
                     <span className="font-bold text-lg tabular-nums">
-                      {askingPrice > 0 ? `$${askingPrice.toLocaleString()}` : '$0.00'}
+                      {askingPrice > 0 ? `AED ${askingPrice.toLocaleString()}` : 'AED 0'}
                     </span>
                   </div>
                 </div>
 
                 <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/30 text-label-sm italic text-on-surface-variant leading-relaxed">
-                  "Premium placement on Sell My Business typically increases inquiry volume by 3x."
+                  "Premium placement on SellMyBusiness.ae typically increases inquiry volume by 3x."
                 </div>
 
                 <div className="space-y-1.5">
