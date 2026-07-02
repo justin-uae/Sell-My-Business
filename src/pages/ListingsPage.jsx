@@ -35,7 +35,7 @@ const SORT_OPTIONS = [
   { value: 'price-desc', label: 'Price: High to Low' },
 ];
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 25;
 
 function formatPrice(n) {
   if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(1)}M`;
