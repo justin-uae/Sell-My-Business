@@ -602,9 +602,14 @@ export default function SellBusinessPage() {
               <p className="text-on-primary-container text-body-md mb-6 relative z-10">
                 Connect with a certified M&amp;A Advisor to maximise your valuation and streamline the process.
               </p>
-              <button className="w-full bg-gold-leaf text-on-secondary-fixed py-3 rounded-xl font-bold hover:brightness-110 transition-all relative z-10 text-label-sm">
+              <a
+                href={`https://wa.me/${import.meta.env.VITE_CONTACT_PHONE}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-gold-leaf text-on-secondary-fixed py-3 rounded-xl font-bold hover:brightness-110 transition-all relative z-10 text-label-sm flex items-center justify-center"
+              >
                 Contact Advisor
-              </button>
+              </a>
             </div>
           </div>
         </div>

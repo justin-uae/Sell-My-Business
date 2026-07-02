@@ -1,5 +1,6 @@
 import Navbar from './Navbar';
 import Footer from './Footer';
+import ScrollToTopButton from '../ui/ScrollToTopButton';
 
 export default function Layout({ children, hideFooter = false }) {
   return (
@@ -7,6 +8,7 @@ export default function Layout({ children, hideFooter = false }) {
       <Navbar />
       <main className="flex-1">{children}</main>
       {!hideFooter && <Footer />}
+      <ScrollToTopButton />
     </div>
   );
 }

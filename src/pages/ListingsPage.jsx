@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getAllProducts, searchProducts } from '../services/shopify';
+import { getAllProductsFull, searchProducts } from '../services/shopify';
 import ListingCard from '../components/listings/ListingCard';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
@@ -35,6 +35,8 @@ const SORT_OPTIONS = [
   { value: 'price-desc', label: 'Price: High to Low' },
 ];
 
+const PAGE_SIZE = 12;
+
 function formatPrice(n) {
   if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `AED ${(n / 1_000).toFixed(0)}k`;
@@ -48,6 +50,7 @@ export default function ListingsPage() {
   const [error, setError] = useState('');
   const [view, setView] = useState('grid');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
   const [filters, setFilters] = useState({
     q: searchParams.get('q') || '',
@@ -66,10 +69,9 @@ export default function ListingsPage() {
     try {
       let results;
       if (filters.q) {
-        results = await searchProducts(filters.q, 50);
+        results = await searchProducts(filters.q);
       } else {
-        const data = await getAllProducts(50);
-        results = data.products;
+        results = await getAllProductsFull();
       }
 
       // Client-side filter + sort
@@ -101,6 +103,17 @@ export default function ListingsPage() {
   }, [filters]);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
+
+  useEffect(() => { setPage(1); }, [filters]);
+
+  const totalPages = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
+  const paginatedProducts = products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const goToPage = (p) => {
+    const clamped = Math.min(Math.max(p, 1), totalPages);
+    setPage(clamped);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const toggleIndustry = (ind) => {
     setFilters(f => ({
@@ -306,21 +319,68 @@ export default function ListingsPage() {
             ) : (
               <>
                 <motion.div
-                  key={view}
+                  key={`${view}-${page}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
                   className={view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-gutter' : 'flex flex-col gap-4'}
                 >
-                  {products.map((product, i) => (
+                  {paginatedProducts.map((product, i) => (
                     <ListingCard key={product.id} product={product} view={view} index={i} />
                   ))}
                 </motion.div>
 
                 <div className="mt-12 flex flex-col items-center gap-4">
                   <p className="text-label-xs text-outline font-medium">
-                    Showing {products.length} listing{products.length !== 1 ? 's' : ''}
+                    Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, products.length)} of {products.length} listing{products.length !== 1 ? 's' : ''}
                   </p>
+
+                  {totalPages > 1 && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => goToPage(page - 1)}
+                        disabled={page === 1}
+                        className="p-2 rounded-lg bg-white shadow-sm text-on-surface-variant hover:text-investment-blue disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-on-surface-variant transition-colors"
+                        aria-label="Previous page"
+                      >
+                        <span className="material-symbols-outlined text-[20px] block">chevron_left</span>
+                      </button>
+
+                      {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                        .reduce((acc, p, idx, arr) => {
+                          if (idx > 0 && p - arr[idx - 1] > 1) acc.push('ellipsis-' + p);
+                          acc.push(p);
+                          return acc;
+                        }, [])
+                        .map(p =>
+                          typeof p === 'string' ? (
+                            <span key={p} className="px-2 text-outline text-label-sm">…</span>
+                          ) : (
+                            <button
+                              key={p}
+                              onClick={() => goToPage(p)}
+                              className={`min-w-[36px] h-9 px-2 rounded-lg text-label-sm font-bold transition-colors ${
+                                p === page
+                                  ? 'bg-investment-blue text-white'
+                                  : 'bg-white shadow-sm text-on-surface-variant hover:text-investment-blue'
+                              }`}
+                            >
+                              {p}
+                            </button>
+                          )
+                        )}
+
+                      <button
+                        onClick={() => goToPage(page + 1)}
+                        disabled={page === totalPages}
+                        className="p-2 rounded-lg bg-white shadow-sm text-on-surface-variant hover:text-investment-blue disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-on-surface-variant transition-colors"
+                        aria-label="Next page"
+                      >
+                        <span className="material-symbols-outlined text-[20px] block">chevron_right</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               </>
             )}

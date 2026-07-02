@@ -171,6 +171,21 @@ export async function getAllProducts(first = 50, after = null) {
   };
 }
 
+// Fetches every product in the store by walking Shopify's cursor pagination.
+export async function getAllProductsFull(pageSize = 50) {
+  let after = null;
+  let all = [];
+
+  while (true) {
+    const { products, pageInfo } = await getAllProducts(pageSize, after);
+    all = all.concat(products);
+    if (!pageInfo.hasNextPage) break;
+    after = pageInfo.endCursor;
+  }
+
+  return all;
+}
+
 export async function getProductByHandle(handle) {
   const data = await storefrontFetch(`
     query getProductByHandle($handle: String!) {
@@ -183,7 +198,7 @@ export async function getProductByHandle(handle) {
   return data.product ? normalizeProduct(data.product) : null;
 }
 
-export async function searchProducts(query, first = 20) {
+export async function searchProducts(query, first = 250) {
   const data = await storefrontFetch(`
     query searchProducts($query: String!, $first: Int!) {
       products(first: $first, query: $query) {
